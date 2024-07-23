@@ -1,0 +1,81 @@
+apiVersion: operator.tekton.dev/v1alpha1
+kind: TektonConfig
+metadata:
+  labels:
+    operator.tekton.dev/release-version: v0.72.0
+  annotations:
+    "helm.sh/hook": post-install
+  name: config
+spec:
+  addon: {}
+  chain:
+    artifacts.oci.storage: oci
+    artifacts.taskrun.format: in-toto
+    artifacts.taskrun.storage: oci
+    transparency.enabled: true
+
+  config: {}
+  dashboard:
+    options:
+      disabled: false
+    readonly: false
+  hub:
+    options:
+      disabled: false
+  pipeline:
+    await-sidecar-readiness: true
+    coschedule: workspaces
+    disable-creds-init: true
+    enable-api-fields: alpha
+    enable-bundles-resolver: true
+    enable-cel-in-whenexpression: false
+    enable-cluster-resolver: true
+    enable-custom-tasks: true
+    enable-git-resolver: true
+    enable-hub-resolver: true
+    enable-param-enum: false
+    enable-provenance-in-status: true
+    enable-step-actions: true
+    enable-tekton-oci-bundles: true
+    enforce-nonfalsifiability: none
+    keep-pod-on-cancel: false
+    max-result-size: 4096
+    metrics.count.enable-reason: false
+    metrics.pipelinerun.duration-type: histogram
+    metrics.pipelinerun.level: pipeline
+    metrics.taskrun.duration-type: histogram
+    metrics.taskrun.level: task
+    options:
+      disabled: false
+      configMaps:
+        cluster-resolver-config:
+          data:
+            default-namespace: "cluster-tekton-catalog"
+            allowed-namespaces: ""
+            blocked-namespaces: ""
+            default-kind: "task"
+        bundleresolver-config:
+          data:
+            default-kind: "task"
+    performance:
+      disable-ha: false
+    require-git-ssh-secret-known-hosts: false
+    results-from: termination-message
+    running-in-environment-with-injected-sidecars: true
+    send-cloudevents-for-runs: false
+    set-security-context: false
+    trusted-resources-verification-no-match-policy: ignore
+  platforms:
+    openshift: {}
+  profile: all
+  pruner:
+    disabled: false
+    keep-since: 7200
+    resources:
+      - pipelinerun
+    schedule: 0 */6 * * *
+  targetNamespace: tekton-operator
+  trigger:
+    enable-api-fields: stable
+    options:
+      disabled: false
